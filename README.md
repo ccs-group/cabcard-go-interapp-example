@@ -4,13 +4,14 @@ A simple React Native (Expo) app to demonstrate how to initiate a payment with C
 
 ## Installation
 
-- `git clone <repo url>`
-- `cd <path>`
-- `npm install`
-- `npm install -g expo-cli`
+- `git clone git@github.com:ccs-group/cabcard-go-interapp-example.git` (clone repo)
+- `cd cabcard-go-interapp-example` (navigate to directory)
+- `npm install` (install npm packages)
+- `npm install -g expo-cli` (install Expo CLI globally)
 
 ## Usage
 
 - `expo start`
-- open the Expo Go app on your phone
-- follow the on-screen instructions
+- Install Expo Go on your Android phone - [Play Store link](https://play.google.com/store/apps/details?id=host.exp.exponent)
+- Open the Expo Go app on your phone, scan the QR code to run your Expo Go app
+- follow the on-screen instructions to start a transaction

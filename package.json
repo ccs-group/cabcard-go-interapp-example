@@ -1,5 +1,5 @@
 {
-  "name": "third-party",
+  "name": "cabcard-go-interapp-example",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
