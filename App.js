@@ -52,11 +52,9 @@ export default function App() {
     };
 
     // open via Intent
-    const activityAction = ActivityAction.WIFI_SETTINGS; // ('Action.MAIN') - the value supplied here does not seem to matter
     const intentParams = {
       packageName: PACKAGE_NAME,
       className: `${PACKAGE_NAME}.MainActivity`,
-      // flags: 536870912, // https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_SINGLE_TOP
       extra: {
         action: "transaction", // fixed value
         transaction: JSON.stringify(params), // dynamic parameters
@@ -65,7 +63,7 @@ export default function App() {
 
     try {
       const intentResult = await startActivityAsync(
-        activityAction,
+        "ACTION_MAIN",
         intentParams
       );
 
