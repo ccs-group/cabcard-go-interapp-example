@@ -13,6 +13,8 @@ export default function App() {
   // params
   const [originator, setOriginator] = useState("Custom App");
   const [reference, setReference] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState(0);
 
   const originators = [
@@ -44,10 +46,12 @@ export default function App() {
     setIsStarted(true);
 
     const params = {
-      amount: Math.round(amount * 100), // must be an integer (currency minor units)
+      amount: parseInt(Math.round(amount * 100), 10), // must be an integer (currency minor units)
       currency: "GBP", // static value
       originator,
       reference,
+      customerEmailAddress: email,
+      customerPhoneNumber: phone,
       identifier: uuid.v4(), // a unique identifier
     };
 
@@ -151,6 +155,22 @@ export default function App() {
               precision={2}
               minValue={0}
               // editable={!isWorking}
+            />
+
+            {/* Customer email address (optional) */}
+            <Text>Customer email:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setEmail}
+              value={email}
+            />
+
+            {/* Customer phone number (optional) */}
+            <Text>Customer phone:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setPhone}
+              value={phone}
             />
 
             <Button
