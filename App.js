@@ -9,16 +9,10 @@ export default function App() {
   const [intentResult, setIntentResult] = useState(null);
   const [intentCancelled, setIntentCancelled] = useState(false);
   const [intentCompleted, setIntentCompleted] = useState(false);
-  const [originator, setOriginator] = useState("Custom App");
-  const [reference, setReference] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [amountText, setAmountText] = useState("");
-  const amount = parseFloat(amountText) || 0;
-
   const originators = ["Custom App", "Cab9", "Autocab", "iCabbi", "CabTreasure", "Cordic"];
 
   const presets = [
+    { label: "Valid (£10)", originator: "Custom App", amount: 10, reference: "BOOKING-001" },
     { label: "Custom", originator: "Custom App", amount: 0, reference: "" },
     {
       label: "Invalid payload",
@@ -26,6 +20,14 @@ export default function App() {
         "Because this reference exceeds the allowed length of 100 characters, it will not be accepted as valid.",
     },
   ];
+
+  const [selectedPreset, setSelectedPreset] = useState(presets[0].label);
+  const [originator, setOriginator] = useState(presets[0].originator);
+  const [reference, setReference] = useState(presets[0].reference);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [amountText, setAmountText] = useState(String(presets[0].amount));
+  const amount = parseFloat(amountText) || 0;
 
   const PACKAGE_NAME = "services.cabcard.driver";
 
@@ -68,8 +70,10 @@ export default function App() {
     setIntentResult(null);
     setIntentCancelled(false);
     setIntentCompleted(false);
-    setReference("");
-    setAmountText("");
+    setSelectedPreset(presets[0].label);
+    setOriginator(presets[0].originator);
+    setReference(presets[0].reference);
+    setAmountText(String(presets[0].amount));
   }
 
   return (
@@ -83,7 +87,9 @@ export default function App() {
             <View style={styles.pickerWrapper}>
               <Picker
                 mode="dropdown"
+                selectedValue={selectedPreset}
                 onValueChange={(value) => {
+                  setSelectedPreset(value);
                   const preset = presets.find((p) => p.label === value);
                   if (!preset) return;
                   if ("amount" in preset) setAmountText(preset.amount === 0 ? "" : String(preset.amount));
@@ -114,13 +120,12 @@ export default function App() {
               placeholder="e.g. booking ID"
             />
 
-            <Text style={styles.label}>Amount</Text>
+            <Text style={styles.label}>Amount <Text style={styles.required}>*</Text></Text>
             <View style={styles.prefixInputWrapper}>
               <Text style={styles.prefix}>£</Text>
               <TextInput
                 style={styles.prefixInput}
                 keyboardType="decimal-pad"
-                autoFocus={true}
                 value={amountText}
                 onChangeText={setAmountText}
                 placeholder="0.00"
@@ -154,7 +159,7 @@ export default function App() {
               <Button
                 onPress={handleStart}
                 title="Open CabCard"
-                color="#cc0000"
+                color="#2e7d32"
                 disabled={amount < 1}
               />
             </View>
@@ -221,6 +226,9 @@ const styles = StyleSheet.create({
   optional: {
     fontWeight: "400",
     color: "#999",
+  },
+  required: {
+    color: "#cc0000",
   },
   input: {
     height: 44,
