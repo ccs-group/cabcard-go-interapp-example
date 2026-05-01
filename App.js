@@ -160,7 +160,7 @@ export default function App() {
                 onPress={handleStart}
                 title="Open CabCard"
                 color="#2e7d32"
-                disabled={amount < 1}
+                disabled={amount <= 0}
               />
             </View>
           </View>
