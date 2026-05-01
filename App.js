@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, Button, TextInput, ScrollView } from "react-native";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { startActivityAsync } from "expo-intent-launcher";
 import { randomUUID } from "expo-crypto";
-import { Picker } from "@react-native-picker/picker";
+import SelectDropdown from "react-native-select-dropdown";
 
 export default function App() {
   const [isStarted, setIsStarted] = useState(false);
@@ -21,7 +21,8 @@ export default function App() {
     },
   ];
 
-  const [selectedPreset, setSelectedPreset] = useState(presets[0].label);
+  const presetRef = useRef(null);
+  const originatorRef = useRef(null);
   const [originator, setOriginator] = useState(presets[0].originator);
   const [reference, setReference] = useState(presets[0].reference);
   const [email, setEmail] = useState("");
@@ -70,10 +71,11 @@ export default function App() {
     setIntentResult(null);
     setIntentCancelled(false);
     setIntentCompleted(false);
-    setSelectedPreset(presets[0].label);
     setOriginator(presets[0].originator);
     setReference(presets[0].reference);
     setAmountText(String(presets[0].amount));
+    presetRef.current?.reset();
+    originatorRef.current?.reset();
   }
 
   return (
@@ -84,33 +86,48 @@ export default function App() {
             <Text style={styles.title}>CabCard Payment Demo</Text>
 
             <Text style={styles.label}>Preset</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                mode="dropdown"
-                selectedValue={selectedPreset}
-                onValueChange={(value) => {
-                  setSelectedPreset(value);
-                  const preset = presets.find((p) => p.label === value);
-                  if (!preset) return;
-                  if ("amount" in preset) setAmountText(preset.amount === 0 ? "" : String(preset.amount));
-                  if ("originator" in preset) setOriginator(preset.originator);
-                  if ("reference" in preset) setReference(preset.reference);
-                }}
-              >
-                {presets.map((p) => (
-                  <Picker.Item key={p.label} label={p.label} value={p.label} />
-                ))}
-              </Picker>
-            </View>
+            <SelectDropdown
+              ref={presetRef}
+              data={presets}
+              defaultValue={presets[0]}
+              onSelect={(item) => {
+                if ("amount" in item) setAmountText(item.amount === 0 ? "" : String(item.amount));
+                if ("originator" in item) setOriginator(item.originator);
+                if ("reference" in item) setReference(item.reference);
+              }}
+              renderButton={(selected) => (
+                <View style={styles.dropdownButton}>
+                  <Text style={styles.dropdownButtonText}>{selected ? selected.label : presets[0].label}</Text>
+                  <Text style={styles.dropdownChevron}>›</Text>
+                </View>
+              )}
+              renderItem={(item, _, isSelected) => (
+                <View style={[styles.dropdownItem, isSelected && styles.dropdownItemActive]}>
+                  <Text style={[styles.dropdownItemText, isSelected && styles.dropdownItemTextActive]}>{item.label}</Text>
+                </View>
+              )}
+              dropdownStyle={styles.dropdownSheet}
+            />
 
             <Text style={styles.label}>App name</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker mode="dropdown" selectedValue={originator} onValueChange={setOriginator}>
-                {originators.map((o) => (
-                  <Picker.Item key={o} label={o} value={o} />
-                ))}
-              </Picker>
-            </View>
+            <SelectDropdown
+              ref={originatorRef}
+              data={originators}
+              defaultValue={originators[0]}
+              onSelect={setOriginator}
+              renderButton={(selected) => (
+                <View style={styles.dropdownButton}>
+                  <Text style={styles.dropdownButtonText}>{selected || originators[0]}</Text>
+                  <Text style={styles.dropdownChevron}>›</Text>
+                </View>
+              )}
+              renderItem={(item, _, isSelected) => (
+                <View style={[styles.dropdownItem, isSelected && styles.dropdownItemActive]}>
+                  <Text style={[styles.dropdownItemText, isSelected && styles.dropdownItemTextActive]}>{item}</Text>
+                </View>
+              )}
+              dropdownStyle={styles.dropdownSheet}
+            />
 
             <Text style={styles.label}>Reference</Text>
             <TextInput
@@ -240,12 +257,46 @@ const styles = StyleSheet.create({
     color: "#1a1a1a",
     backgroundColor: "#fafafa",
   },
-  pickerWrapper: {
+  dropdownButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: 44,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 6,
+    paddingHorizontal: 12,
     backgroundColor: "#fafafa",
-    overflow: "hidden",
+    width: "100%",
+  },
+  dropdownButtonText: {
+    fontSize: 16,
+    color: "#1a1a1a",
+  },
+  dropdownChevron: {
+    fontSize: 22,
+    color: "#888",
+    transform: [{ rotate: "90deg" }],
+  },
+  dropdownSheet: {
+    borderRadius: 8,
+  },
+  dropdownItem: {
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  dropdownItemActive: {
+    backgroundColor: "#e8f4e8",
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: "#1a1a1a",
+  },
+  dropdownItemTextActive: {
+    fontWeight: "600",
+    color: "#2e7d32",
   },
   prefixInputWrapper: {
     flexDirection: "row",
