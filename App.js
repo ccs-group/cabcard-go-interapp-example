@@ -36,13 +36,13 @@ export default function App() {
     setIsStarted(true);
 
     const params = {
-      amount: parseInt(Math.round(amount * 100), 10),
-      currency: "GBP",
+      amount: parseInt(Math.round(amount * 100), 10), // must be an integer (currency minor units)
+      currency: "GBP", // static value
       originator,
       reference,
       customerEmailAddress: email,
       customerPhoneNumber: phone,
-      identifier: randomUUID(),
+      identifier: randomUUID(), // any unique identifier for this intent
     };
 
     const intentParams = {
